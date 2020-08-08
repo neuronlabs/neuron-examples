@@ -48,12 +48,8 @@ func (b *Blog) BeforeUpdate(ctx context.Context, db database.DB) error {
 		OrderBy("-Likes").
 		Get()
 	if err != nil {
-		cl, ok := err.(errors.ClassError)
-		if !ok {
-			return err
-		}
 		// Check if the error is about that no models were found for given query.
-		if cl.Class() != query.ClassNoResult {
+		if !errors.Is(err, query.ErrQueryNoResult) {
 			return err
 		}
 	}
@@ -85,7 +81,7 @@ func (b BlogHandler) HandleAfterInsert(params *server.Params, input *codec.Paylo
 	// Commit the transaction.
 	tx, ok := params.DB.(*database.Tx)
 	if !ok {
-		return errors.NewDetf(server.ClassInternal, "internal error - db should be a transaction")
+		return errors.WrapDetf(server.ErrInternal, "internal error - db should be a transaction")
 	}
 	if !tx.Transaction.State.Done() {
 		if err := tx.Commit(); err != nil {
