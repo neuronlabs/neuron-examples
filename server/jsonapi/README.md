@@ -1,8 +1,25 @@
 # json:api server
 
 This example shows usage of [Neuron framework](https://github.com/neuronlabs/neuron) by providing the http 
-server with `json:api` access. 
+server with `json:api` access and multiple `postgres` databases access.
+ 
+## Installation
 
+Requirements:
+
+- PostgreSQL Database - with some accounts and databases
+- [Optional] [Neuron Generator](https://github.com/neuronlabs/neuron-generator) - if additional fields are provided for the models
+
+In order to run this application set two environmental variables:
+
+- "NEURON_DEFAULT_POSTGRES" - a postgres url for blogs and posts eg.: `postgresql://user:password@host:port/database1`
+- "NEURON_COMMENTS_POSTGRES" - a postgres access url for comments eg.: `postgresql://user:password@host:port/database2`
+
+Then to execute the script within this directory: 
+```shell script
+go run ./
+```
+    
 ### http.Server
 
 The module [github.com/neuronlabs/neuron-extensions/server/http](https://github.com/neuronlabs/neuron-extensions/tree/master/server/http)
