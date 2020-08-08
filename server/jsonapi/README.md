@@ -63,7 +63,7 @@ Accept: application/vnd.api+json
 {
     "data" : {
         "type": "comments",
-        "id": "1"
+        "id": "1",
         "attributes": {
             "body": "This is changed body of this comment"    
         }        
