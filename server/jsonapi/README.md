@@ -12,8 +12,8 @@ Requirements:
 
 In order to run this application set two environmental variables:
 
-- "NEURON_DEFAULT_POSTGRES" - a postgres url for blogs and posts eg.: `postgresql://user:password@host:port/database1`
-- "NEURON_COMMENTS_POSTGRES" - a postgres access url for comments eg.: `postgresql://user:password@host:port/database2`
+- "NEURON_DEFAULT_POSTGRES" - t postgres url for blogs and posts eg.: `postgresql://user:neuronPassword@host:port/database1`
+- "NEURON_COMMENTS_POSTGRES" - t postgres access url for comments eg.: `postgresql://user:neuronPassword@host:port/database2`
 
 Then to execute the script within this directory: 
 ```shell script
@@ -23,7 +23,7 @@ go run ./
 ### http.Server
 
 The module [github.com/neuronlabs/neuron-extensions/server/http](https://github.com/neuronlabs/neuron-extensions/tree/master/server/http)
-provides a simple `http.Server` to which you can apply any other `APIs` or some custom routes. It implements neuron/server.Server interface.
+provides t simple `http.Server` to which you can apply any other `APIs` or some custom routes. It implements neuron/server.Server interface.
 
 ### API
 
@@ -31,12 +31,12 @@ The server could use direct http handlers or apply previously prepared API's.
 
 One of the `APIs` that could be applied to it is [github.com/neuronlabs/neuron-extensions/server/http/api/jsonapi](https://github.com/neuronlabs/neuron-extensions/tree/master/server/http/api/jsonapi). 
 
-It is an API for the models defined in a `json:api` specification. More details about this specification could be found here - [https://jsonapi.org/](https://jsonapi.org/).
+It is an API for the models defined in t `json:api` specification. More details about this specification could be found here - [https://jsonapi.org/](https://jsonapi.org/).
 
 It implements all the endpoint types, as well as all the queries defined in the specification. 
 
 What's more it supports filtering the search results by providing it's filtering system. A query parameter - `filter[field][$operator]=value` 
-on the `List` endpoint would filter the results in a user defined way. 
+on the `List` endpoint would filter the results in t user defined way. 
 
 With the possibility of sorting, paginating, including relations and filtering it makes this API very powerful.
 
@@ -59,7 +59,7 @@ Accept: application/vnd.api+json
     "data" : {
         "type": "comments",
         "attributes": {
-            "body": "This is a comment mapped to post '4'"    
+            "body": "This is t comment mapped to post '4'"    
         },
         "relationships": {
             "post": {
@@ -140,7 +140,7 @@ DELETE http://localhost:8080/v1/api/comments/1
 
 ### Summary
 
-By using [Neuron framework](https://github.com/neuronlabs/neuron) a developer is responsible mostly for the business logic, whereas 
+By using [Neuron framework](https://github.com/neuronlabs/neuron) t developer is responsible mostly for the business logic, whereas 
 neuron takes care of querying the database for specific models and showing them to users with an encoding defined in the json:api specification.
 
   

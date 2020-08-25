@@ -3,9 +3,10 @@ package main
 import (
 	"os"
 
-	"github.com/neuronlabs/neuron-extensions/repository/postgres"
 	"github.com/neuronlabs/neuron/log"
 	"github.com/neuronlabs/neuron/repository"
+
+	"github.com/neuronlabs/neuron-extensions/repository/postgres"
 )
 
 const (

@@ -12,8 +12,8 @@ import (
 	"github.com/neuronlabs/neuron/server"
 )
 
-//go:generate neuron-generator models --format=goimports --single-file .
-//go:generate neuron-generator collections --format=goimports  --single-file .
+//go:generate neurogns models methods --format=goimports --single-file .
+//go:generate neurogns collections --format=goimports  --single-file .
 
 type Blog struct {
 	ID        int
@@ -49,7 +49,7 @@ func (b *Blog) BeforeUpdate(ctx context.Context, db database.DB) error {
 		Get()
 	if err != nil {
 		// Check if the error is about that no models were found for given query.
-		if !errors.Is(err, query.ErrQueryNoResult) {
+		if !errors.Is(err, query.ErrNoResult) {
 			return err
 		}
 	}
@@ -62,7 +62,8 @@ func (b *Blog) BeforeUpdate(ctx context.Context, db database.DB) error {
 }
 
 var (
-	_ server.BeforeInsertHandler = &BlogHandler{}
+	_ server.WithContextInserter = &BlogHandler{}
+	_ server.InsertTransactioner = &BlogHandler{}
 	_ server.AfterInsertHandler  = &BlogHandler{}
 )
 
@@ -71,40 +72,28 @@ var (
 // All other handles would be done by the default json:api handler.
 type BlogHandler struct{}
 
-func (b BlogHandler) HandleAfterInsert(params *server.Params, input *codec.Payload) error {
+// InsertWithContext implements server.WithContextInserter.
+func (b BlogHandler) InsertWithContext(ctx context.Context) (context.Context, error) {
+	ts := time.Now()
+	return context.WithValue(ctx, "timestamp", ts), nil
+}
+
+// InsertWithTransaction implements server.InsertTransactioner.
+func (b BlogHandler) InsertWithTransaction() *query.TxOptions {
+	return nil
+}
+
+func (b BlogHandler) HandleAfterInsert(ctx context.Context, db database.DB, input *codec.Payload) error {
 	if input.Meta == nil {
 		input.Meta = codec.Meta{}
 	}
 	// Add some metadata to the input.
 	input.Meta["copyright"] = "neuron@neuronlabs.com"
-
-	// Commit the transaction.
-	tx, ok := params.DB.(*database.Tx)
-	if !ok {
-		return errors.WrapDetf(server.ErrInternal, "internal error - db should be a transaction")
-	}
-	if !tx.Transaction.State.Done() {
-		if err := tx.Commit(); err != nil {
-			return err
-		}
-	}
-	ts, ok := params.Ctx.Value("timestamp").(time.Time)
+	ts, ok := ctx.Value("timestamp").(time.Time)
 	if !ok {
 		log.Errorf("No timestamp found in the context")
 	}
 	log.Infof("Inserting blog taken: %s", time.Since(ts))
-	return nil
-}
-
-func (b BlogHandler) HandleBeforeInsert(params *server.Params, input *codec.Payload) (err error) {
-	// Set the transaction at the beginning of the handle with the default options.
-	params.DB, err = database.Begin(params.Ctx, params.DB, nil)
-	if err != nil {
-		return err
-	}
-	// Set some value in the context that would be used by the handler.
-	startTimestamp := params.DB.Controller().Now()
-	params.Ctx = context.WithValue(params.Ctx, "timestamp", startTimestamp)
 	return nil
 }
 
