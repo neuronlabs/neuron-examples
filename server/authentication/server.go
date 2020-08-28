@@ -47,10 +47,9 @@ func (l *tokenChecker) SetRoutes(router *httprouter.Router) error {
 		rw.Header().Set("Content-Type", "application/json")
 		rw.WriteHeader(stdHttp.StatusOK)
 		if err := json.GetCodec(l.c).MarshalPayload(rw, &codec.Payload{
-			ModelStruct:           l.c.MustModelStruct(acc),
-			Data:                  []mapping.Model{acc},
-			MarshalSingularFormat: true,
-		}); err != nil {
+			ModelStruct: l.c.MustModelStruct(acc),
+			Data:        []mapping.Model{acc},
+		}, codec.MarshalSingleModel()); err != nil {
 			log.Errorf("Marshaling payload failed: %v", err)
 		}
 	}))))

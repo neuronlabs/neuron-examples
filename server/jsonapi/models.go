@@ -12,8 +12,8 @@ import (
 	"github.com/neuronlabs/neuron/server"
 )
 
-//go:generate neurogns models methods --format=goimports --single-file .
-//go:generate neurogns collections --format=goimports  --single-file .
+//go:generate neurogonesis models methods --format=goimports --single-file .
+//go:generate neurogonesis collections --format=goimports  --single-file .
 
 type Blog struct {
 	ID        int
@@ -30,7 +30,7 @@ var (
 )
 
 // BeforeInsert is a model hook executed before insertion of blog.
-func (b *Blog) BeforeInsert(ctx context.Context, db database.DB) error {
+func (b *Blog) BeforeInsert(ctx context.Context, _ database.DB) error {
 	ts, ok := ctx.Value("timestamp").(time.Time)
 	if !ok {
 		log.Errorf("no timestamp found in the context")
