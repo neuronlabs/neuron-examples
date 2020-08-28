@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/neuronlabs/neuron-extensions/server/http"
-	"github.com/neuronlabs/neuron-extensions/server/http/api/jsonapi"
-	"github.com/neuronlabs/neuron-extensions/server/http/middleware"
+	"github.com/neuronlabs/neuron-extensions/server/xhttp"
+	"github.com/neuronlabs/neuron-extensions/server/xhttp/api/jsonapi"
+	"github.com/neuronlabs/neuron-extensions/server/xhttp/middleware"
 )
 
 func getJsonAPI() *jsonapi.API {

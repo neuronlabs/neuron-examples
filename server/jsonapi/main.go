@@ -7,7 +7,7 @@ import (
 	"github.com/neuronlabs/neuron"
 	"github.com/neuronlabs/neuron/log"
 
-	serverLogs "github.com/neuronlabs/neuron-extensions/server/http/log"
+	serverLogs "github.com/neuronlabs/neuron-extensions/server/xhttp/log"
 )
 
 func main() {

@@ -1,15 +1,10 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
-	"github.com/neuronlabs/neuron-extensions/codec/json"
-
 	stdHttp "net/http"
 
-	"github.com/neuronlabs/neuron-extensions/server/http"
-	"github.com/neuronlabs/neuron-extensions/server/http/api/authentication"
-	"github.com/neuronlabs/neuron-extensions/server/http/httputil"
-	"github.com/neuronlabs/neuron-extensions/server/http/middleware"
+	"github.com/julienschmidt/httprouter"
+
 	"github.com/neuronlabs/neuron/auth"
 	"github.com/neuronlabs/neuron/codec"
 	"github.com/neuronlabs/neuron/core"
@@ -18,6 +13,11 @@ import (
 	"github.com/neuronlabs/neuron/server"
 
 	"github.com/neuronlabs/neuron-extensions/auth/accounts"
+	"github.com/neuronlabs/neuron-extensions/codec/cjson"
+	"github.com/neuronlabs/neuron-extensions/server/xhttp"
+	"github.com/neuronlabs/neuron-extensions/server/xhttp/api/authentication"
+	"github.com/neuronlabs/neuron-extensions/server/xhttp/httputil"
+	"github.com/neuronlabs/neuron-extensions/server/xhttp/middleware"
 )
 
 type tokenChecker struct {
@@ -36,7 +36,7 @@ func (l *tokenChecker) InitializeAPI(c *core.Controller) error {
 }
 
 func (l *tokenChecker) SetRoutes(router *httprouter.Router) error {
-	chain := server.MiddlewareChain{middleware.Controller(l.c), middleware.WithCodec(json.GetCodec(l.c)), middleware.BearerAuthenticate()}
+	chain := server.MiddlewareChain{middleware.Controller(l.c), middleware.WithCodec(cjson.GetCodec(l.c)), middleware.BearerAuthenticate()}
 	router.GET("/auth/verify-token", httputil.Wrap(chain.Handle(stdHttp.HandlerFunc(func(rw stdHttp.ResponseWriter, req *stdHttp.Request) {
 		acc, ok := auth.CtxGetAccount(req.Context())
 		if !ok {
@@ -46,7 +46,7 @@ func (l *tokenChecker) SetRoutes(router *httprouter.Router) error {
 		}
 		rw.Header().Set("Content-Type", "application/json")
 		rw.WriteHeader(stdHttp.StatusOK)
-		if err := json.GetCodec(l.c).MarshalPayload(rw, &codec.Payload{
+		if err := cjson.GetCodec(l.c).MarshalPayload(rw, &codec.Payload{
 			ModelStruct: l.c.MustModelStruct(acc),
 			Data:        []mapping.Model{acc},
 		}, codec.MarshalSingleModel()); err != nil {
@@ -56,9 +56,9 @@ func (l *tokenChecker) SetRoutes(router *httprouter.Router) error {
 	return nil
 }
 
-var _ http.API = &tokenChecker{}
+var _ xhttp.API = &tokenChecker{}
 
-func getAuthAPI() (http.API, error) {
+func getAuthAPI() (xhttp.API, error) {
 	api, err := authentication.New(
 		authentication.WithAccountModel(&accounts.Account{}),
 		authentication.WithPathPrefix("/auth"),
@@ -66,19 +66,19 @@ func getAuthAPI() (http.API, error) {
 	return api, err
 }
 
-func getServer() (*http.Server, error) {
+func getServer() (*xhttp.Server, error) {
 	// Create api based on json:api specification.
 	authAPI, err := getAuthAPI()
 	if err != nil {
 		return nil, err
 	}
 	// Create new http server.
-	s := http.New(
-		http.WithAPI(authAPI),
-		http.WithAPI(&tokenChecker{}),
+	s := xhttp.New(
+		xhttp.WithAPI(authAPI),
+		xhttp.WithAPI(&tokenChecker{}),
 		// Mount json:api with the models.
 		// Set the listening port.
-		http.WithPort(8080),
+		xhttp.WithPort(8080),
 	)
 	return s, nil
 }

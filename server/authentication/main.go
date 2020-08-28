@@ -8,18 +8,16 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
-	"github.com/neuronlabs/neuron-extensions/store/memory"
-
 	"github.com/neuronlabs/neuron"
 	"github.com/neuronlabs/neuron/auth"
 	"github.com/neuronlabs/neuron/log"
 	"github.com/neuronlabs/neuron/store"
 
+	"github.com/neuronlabs/neuron-extensions/auth/accounts"
 	"github.com/neuronlabs/neuron-extensions/auth/authenticator"
 	"github.com/neuronlabs/neuron-extensions/auth/jwt-tokener"
-	serverLogs "github.com/neuronlabs/neuron-extensions/server/http/log"
-
-	"github.com/neuronlabs/neuron-extensions/auth/accounts"
+	serverLogs "github.com/neuronlabs/neuron-extensions/server/xhttp/log"
+	"github.com/neuronlabs/neuron-extensions/store/memory"
 )
 
 func main() {
